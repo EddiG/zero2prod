@@ -2,9 +2,9 @@ name: Rust
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master", "axum"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master", "axum"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -55,4 +55,3 @@ jobs:
       - name: Generate code coverage
         run: |
           cargo tarpaulin --verbose --workspace
-
