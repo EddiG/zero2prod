@@ -1,9 +1,12 @@
+use zero2prod::configuration::get_configutation;
 use zero2prod::startup::run;
 
 #[tokio::main]
 async fn main() {
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8000")
+    let configuration = get_configutation().expect("Failed to read configuration");
+    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let listener = tokio::net::TcpListener::bind(&address)
         .await
-        .expect("Failed to bind 8000 port");
+        .unwrap_or_else(|_| panic!("Failed to start listener at {}", &address));
     run(listener).await;
 }
