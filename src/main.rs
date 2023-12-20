@@ -12,8 +12,7 @@ async fn main() {
     let configuration = get_configutation().expect("Failed to read configuration");
 
     // Create the database connection pool
-    let connection_pool = PgPool::connect(&configuration.database.connection_string())
-        .await
+    let connection_pool = PgPool::connect_lazy(&configuration.database.connection_string())
         .expect("Failed to connect to Postgres");
 
     // Start listening at the configured port
