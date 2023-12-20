@@ -17,7 +17,7 @@ async fn main() {
         .expect("Failed to connect to Postgres");
 
     // Start listening at the configured port
-    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let address = configuration.application.address();
     let listener = tokio::net::TcpListener::bind(&address)
         .await
         .unwrap_or_else(|_| panic!("Failed to start listener at {}", &address));
