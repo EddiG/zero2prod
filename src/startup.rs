@@ -18,7 +18,6 @@ use crate::{
 pub async fn run(listener: TcpListener, db_pool: PgPool) {
     let state = AppState { db_pool };
     let app = Router::new()
-        .route("/health_check", get(health_check))
         .route("/subscriptions", post(subscribe))
         .with_state(state)
         .layer(
@@ -39,7 +38,9 @@ pub async fn run(listener: TcpListener, db_pool: PgPool) {
                         tracing::error!("Response failed status={}", error)
                     },
                 ),
-        );
+        )
+        // Exclude 'health_check' from tracing to reduce the noice in the logs
+        .route("/health_check", get(health_check));
 
     axum::serve(listener, app)
         .await
