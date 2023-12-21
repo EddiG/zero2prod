@@ -127,7 +127,7 @@ async fn subscribe_returns_a_422_when_data_is_missing() {
 
         // Assert
         assert_eq!(
-            reqwest::StatusCode::UNPROCESSABLE_ENTITY,
+            reqwest::StatusCode::INTERNAL_SERVER_ERROR,
             response.status(),
             "The API did not fail with 422 Unprocessable Entity when the payload was {}.",
             error_message

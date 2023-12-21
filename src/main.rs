@@ -21,7 +21,7 @@ async fn main() {
         .await
         .unwrap_or_else(|_| panic!("Failed to start listener at {}", &address));
 
-    tracing::info!("Listening at {}", &address);
+    tracing::info!("✨Listening at {}", &address);
 
     // Run the webservice
     run(listener, connection_pool).await;
