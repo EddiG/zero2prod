@@ -1,13 +1,12 @@
 FROM rust:1.74.1 AS chef
 RUN cargo install cargo-chef
+WORKDIR app
 
 FROM chef AS planner
-WORKDIR app
 COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
-WORKDIR app
 COPY --from=planner /app/recipe.json recipe.json
 # Build dependencies - this is the caching Docker layer!
 RUN cargo chef cook --release --recipe-path recipe.json
