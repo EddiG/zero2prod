@@ -1,6 +1,12 @@
 use sqlx::{Connection, Executor, PgConnection, PgPool};
+use std::sync::OnceLock;
 use uuid::Uuid;
-use zero2prod::configuration::{get_configutation, DatabaseSettings};
+use zero2prod::{
+    configuration::{get_configutation, DatabaseSettings},
+    telemetry::setup_tracing,
+};
+
+static TRACING: OnceLock<()> = OnceLock::new();
 
 pub struct TestApp {
     pub address: String,
@@ -8,6 +14,11 @@ pub struct TestApp {
 }
 
 async fn spawn_app() -> TestApp {
+    if std::env::var("TEST_LOG").is_ok() {
+        TRACING.get_or_init(|| {
+            setup_tracing();
+        });
+    }
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
         .await
         .expect("Failed to bind random port");
