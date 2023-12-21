@@ -1,3 +1,16 @@
+ingress:
+  rules:
+    - component:
+        name: zero2prod
+      match:
+        path:
+          prefix: /
+databases:
+  - engine: PG
+    version: "12"
+    name: newsletter
+    num_nodes: 1
+    size: db-s-dev-database
 name: zero2prod
 region: lon1
 services:
@@ -13,3 +26,20 @@ services:
     http_port: 8000
     instance_count: 1
     instance_size_slug: basic-xxs
+    envs:
+      # https://docs.digitalocean.com/products/app-platform/how-to/use-environment-variables/#databases
+      - key: APP_DATABASE__USERNAME
+        scope: RUN_TIME
+        value: ${newsletter.USERNAME}
+      - key: APP_DATABASE__PASSWORD
+        scope: RUN_TIME
+        value: ${newsletter.PASSWORD}
+      - key: APP_DATABASE__HOST
+        scope: RUN_TIME
+        value: ${newsletter.HOSTNAME}
+      - key: APP_DATABASE__PORT
+        scope: RUN_TIME
+        value: ${newsletter.PORT}
+      - key: APP_DATABASE__DATABASE_NAME
+        scope: RUN_TIME
+        value: ${newsletter.DATABASE}

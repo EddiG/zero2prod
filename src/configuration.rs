@@ -1,5 +1,6 @@
 use secrecy::{ExposeSecret, Secret};
 use serde::Deserialize;
+use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::postgres::{PgConnectOptions, PgSslMode};
 
 #[derive(Deserialize)]
@@ -13,6 +14,7 @@ pub struct DatabaseSettings {
     pub username: String,
     pub password: Secret<String>,
     pub host: String,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub database_name: String,
     pub require_ssl: bool,
@@ -40,6 +42,7 @@ impl DatabaseSettings {
 #[derive(Deserialize)]
 pub struct ApplicationSettings {
     pub host: String,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
 }
 
@@ -94,6 +97,13 @@ pub fn get_configutation() -> Result<Settings, config::ConfigError> {
         .add_source(config::File::from(
             configuration_folder.join(environment_filename),
         ))
+        // Add in settings from environment variables (with a prefix of APP and '__' as separator)
+        // E.g. `APP_DATABASE__USERNAME=postgres would set `Settings.database.username`
+        .add_source(
+            config::Environment::with_prefix("APP")
+                .prefix_separator("_")
+                .separator("__"),
+        )
         .build()?;
 
     settings.try_deserialize::<Settings>()
